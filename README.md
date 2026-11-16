@@ -45,7 +45,7 @@ nothing is for sale, no form sends anything, and the prices and figures are illu
 | `js/logic/` | the visitor's configuration and the scroll's state |
 | `js/design/` | the scene, the configurator's panels, the docks, the index, the notices |
 | `*.glb`, `environment-*.png`, `poster-*` | the models, the lights and the first frame |
-| `legal.html`, `404.html`, `pages.css` | the legal notice and privacy page, the missing page |
+| `legal.html`, `404.html` | the legal notice and privacy page, the missing page |
 
 The site is built from the project's working repository; this repository holds what is published.
 GitHub Pages serves the `main` branch.

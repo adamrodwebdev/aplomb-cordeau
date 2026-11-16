@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" data-light="dawn">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-zofcoT2N0lL1S64Bo9MwDoef35+NFw9NhpndbJpJVhg=' 'sha256-cX/veEmuH2uWSP7Va1pvyTSqvUwcPnz4JYB5wM2YAW0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-I3IEzG5/6BN/F+O0uIUu7vI5aVVixVx7qmOVgwRPV9s=' 'sha256-cX/veEmuH2uWSP7Va1pvyTSqvUwcPnz4JYB5wM2YAW0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aplomb Cordeau · One line. Two energies.</title>
 <meta name="description" content="A fictional GT in real-time 3D, electric or straight-six: watch it drift out of the page, then configure its paint, wheels, cabin and energy.">
@@ -48,16 +48,14 @@
       for (const type of signs) removeEventListener(type, moved, true);
     };
     for (const type of signs) addEventListener(type, moved, { passive: true, capture: true });
-    // the body's and the labels' faces come from Google Fonts after that paint too: asked for before,
-    // their stylesheet's connection and files weighed in it (the headline's face is ours, preloaded)
+    // the faces are the site's own since it went live (2026-11-16) and declared in drift.css, so they are
+    // asked for at the first layout (added after the paint, as Google's stylesheet was, they swapped in
+    // late on a real network); the two small ones are preloaded, Archivo (88 KB) is not: it would race
+    // the poster, the first screen's largest paint
     let started = false;
     const start = () => {
       if (started) return;
       started = true;
-      const fonts = document.createElement('link');
-      fonts.rel = 'stylesheet';
-      fonts.href = './fonts/web-fonts.css';
-      document.head.append(fonts);
       import('./js/main.js');
     };
     if (document.visibilityState === 'hidden' || typeof PerformanceObserver !== 'function') {
@@ -72,6 +70,7 @@
 </script>
 <!-- the headline's face is ours and self-hosted: 6 KB, asked for with the first paint -->
 <link rel="preload" href="./fonts/AplombEstoc-VF.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/geist-mono/geist-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="drift.css">
 <script type="importmap">
 { "imports": {
