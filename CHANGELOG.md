@@ -4,6 +4,14 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-11-16
+
+### Fixed
+
+- The fonts are declared in the stylesheet, and the two small ones preloaded. Added after the first
+  paint, as Google's stylesheet once was, they swapped in late on a real network and slowed the page's
+  Speed Index. The legal notice's few rules now sit in the page itself.
+
 ## [1.0.0] - 2026-11-16
 
 ### Added
