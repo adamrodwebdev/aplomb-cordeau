@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" class="no-js" data-light="dawn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-zofcoT2N0lL1S64Bo9MwDoef35+NFw9NhpndbJpJVhg=' 'sha256-cX/veEmuH2uWSP7Va1pvyTSqvUwcPnz4JYB5wM2YAW0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aplomb Cordeau · One line. Two energies.</title>
+<meta name="description" content="A fictional GT in real-time 3D, electric or straight-six: watch it drift out of the page, then configure its paint, wheels, cabin and energy.">
+<link rel="canonical" href="https://adamrodwebdev.github.io/aplomb-cordeau/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Aplomb Cordeau">
+<meta property="og:title" content="Aplomb Cordeau · One line. Two energies.">
+<meta property="og:description" content="A fictional GT in real-time 3D, electric or straight-six: watch it drift out of the page, then configure it.">
+<meta property="og:url" content="https://adamrodwebdev.github.io/aplomb-cordeau/">
+<meta property="og:image" content="https://adamrodwebdev.github.io/aplomb-cordeau/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Aplomb Cordeau in Céladon in a dark studio, the words Balance, by design behind it.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<script>
+  // the layout, chosen before the first paint; the page's code, asked for once that paint is reported
+  // (main.js says why). --pull: the camera's pull back on narrow screens, which the poster follows
+  // (keep in step with LAYOUTS' refAspect and PORTRAIT_BELOW in rules/choreography.js)
+  (() => {
+    const html = document.documentElement;
+    const params = new URLSearchParams(location.search.length <= 200 ? location.search : '');
+    const motion = ['full', 'reduce'].includes(params.get('motion')) ? params.get('motion') : null;
+    const reduced = motion === 'reduce' || (motion !== 'full' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const saveData = navigator.connection?.saveData === true;
+    const webgl2 = typeof WebGL2RenderingContext === 'function';
+    html.classList.replace('no-js', 'js');
+    // the theme, read at the door (light or dark only), else the system's: it lights the studio
+    let theme = null;
+    try {
+      const saved = localStorage.getItem('aplomb-theme');
+      if (saved === 'light' || saved === 'dark') theme = saved;
+    } catch {}
+    html.dataset.theme = theme ?? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    html.classList.add(reduced || saveData || !webgl2 ? 'no-scene' : 'has-scene');
+    const aspect = innerWidth / innerHeight;
+    html.style.setProperty('--pull', Math.max(1, (aspect < 0.85 ? 0.5 : 1.55) / aspect).toFixed(4));
+    // a move before the page's code has come is kept: the scene wakes on it (SceneWake)
+    const signs = ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart', 'scroll'];
+    const moved = () => {
+      html.dataset.moved = '';
+      for (const type of signs) removeEventListener(type, moved, true);
+    };
+    for (const type of signs) addEventListener(type, moved, { passive: true, capture: true });
+    // the body's and the labels' faces come from Google Fonts after that paint too: asked for before,
+    // their stylesheet's connection and files weighed in it (the headline's face is ours, preloaded)
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      const fonts = document.createElement('link');
+      fonts.rel = 'stylesheet';
+      fonts.href = './fonts/web-fonts.css';
+      document.head.append(fonts);
+      import('./js/main.js');
+    };
+    if (document.visibilityState === 'hidden' || typeof PerformanceObserver !== 'function') {
+      document.addEventListener('DOMContentLoaded', start);
+      return;
+    }
+    new PerformanceObserver((list) => {
+      if (list.getEntriesByName('first-contentful-paint').length) start();
+    }).observe({ type: 'paint', buffered: true });
+    setTimeout(start, 1500); // a report that never comes
+  })();
+</script>
+<!-- the headline's face is ours and self-hosted: 6 KB, asked for with the first paint -->
+<link rel="preload" href="./fonts/AplombEstoc-VF.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="drift.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/build/three.module.min.js",
+  "three/addons/": "./vendor/three/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<a class="skip" href="#showroom-mark">Skip to the showroom</a>
+
+<header class="masthead">
+  <a class="brand" href="#top" aria-label="Aplomb, home">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4 6 36M20 4l14 32M20 4v21" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="m20 25 3.2 4.6L20 34l-3.2-4.4Z" fill="var(--brass-fill)"/></svg>
+    <span class="brand-word">Aplomb</span>
+  </a>
+  <span class="badge mono">Prototype · fictional brand</span>
+  <!-- the studio's light: white or night (the road, the workshop, the night and dusk keep theirs) -->
+  <button class="btn btn-ghost btn-sm theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Dark theme">
+    <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor"/></svg>
+  </button>
+  <!-- off by default (the browsers start no sound before a click): the engine as the car leaves -->
+  <button class="btn btn-ghost btn-sm sound-toggle" type="button" data-sound aria-pressed="false" hidden>
+    <svg class="sound-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2h3.7L12 5.4v13.2l-4.8-3.8H3.5Z" fill="currentColor"/><path class="sound-waves" d="M15.5 9.2a3.9 3.9 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="sound-mute" d="m15.6 9.6 4.8 4.8m0-4.8-4.8 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="sound-label">Sound</span>
+  </button>
+  <a class="btn btn-accent btn-sm" href="#demo-notice" data-demo>Test drive</a>
+</header>
+
+<!-- the plumb line (the brief's motif) is the chapters' index, a keyboard's table of contents: a tick
+     per chapter, each a link; the bob hangs at the chapter on screen, its thread growing as the visitor
+     reads, swings with the scroll and rests true when it stops. Over the scene, under the masthead. -->
+<nav class="plumb" data-plumb aria-label="Chapters">
+  <ol class="plumb-ticks">
+    <li><a href="#road-title" data-chapter-link="road"><span class="plumb-tick" aria-hidden="true"></span><span class="plumb-label"><span class="plumb-number">01</span> The road</span></a></li>
+    <li><a href="#show-title" data-chapter-link="showroom"><span class="plumb-tick" aria-hidden="true"></span><span class="plumb-label"><span class="plumb-number">02</span> The showroom</span></a></li>
+    <li><a href="#cfg-exterior" data-chapter-link="exterior"><span class="plumb-tick" aria-hidden="true"></span><span class="plumb-label"><span class="plumb-number">03</span> Exterior</span></a></li>
+    <li><a href="#cfg-cabin" data-chapter-link="cabin"><span class="plumb-tick" aria-hidden="true"></span><span class="plumb-label"><span class="plumb-number">04</span> The cabin</span></a></li>
+    <li><a href="#cfg-energy" data-chapter-link="energy"><span class="plumb-tick" aria-hidden="true"></span><span class="plumb-label"><span class="plumb-number">05</span> Energy</span></a></li>
+    <li><a href="#cfg-finale" data-chapter-link="yours"><span class="plumb-tick" aria-hidden="true"></span><span class="plumb-label"><span class="plumb-number">06</span> Yours</span></a></li>
+  </ol>
+  <span class="plumb-thread" aria-hidden="true"></span>
+  <span class="plumb-pendulum" aria-hidden="true"><span class="plumb-swing"><span class="plumb-line"></span><span class="plumb-bob"></span></span></span>
+</nav>
+
+<main id="top">
+  <section class="landing" data-landing aria-label="The Cordeau">
+    <div class="stage" data-stage data-phase="road">
+      <div class="panel panel--road">
+        <div class="plate plate--road" aria-hidden="true"></div>
+        <div class="copy copy--road">
+          <div class="road-head">
+            <p class="kicker mono">Aplomb Cordeau · 2026</p>
+            <div class="waterline">
+              <h1 class="headline" id="road-title" tabindex="-1" data-headline>One line.<br>Two energies.</h1>
+              <p class="headline headline--mirror" aria-hidden="true">One line.<br>Two energies.</p>
+            </div>
+          </div>
+          <div class="road-foot">
+            <p class="lede">A four-door GT, electric or straight-six. Scroll, and let it go.</p>
+            <p class="cue mono" aria-hidden="true">Scroll</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel--showroom">
+        <div class="plate plate--showroom" aria-hidden="true"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+        <div class="copy copy--showroom">
+          <p class="kicker mono">02 · The showroom</p>
+          <h2 class="headline headline--show" id="show-title" tabindex="-1" data-headline-show>Balance,<br>by design.</h2>
+          <p class="lede" data-config-lede>The Cordeau in Céladon, on Fan 25 wheels.</p>
+          <div class="ctas">
+            <a class="btn btn-accent" href="#demo-notice" data-demo>Book a test drive</a>
+            <a class="btn btn-ghost" href="#cfg-exterior" data-jump="exterior">Configure</a>
+          </div>
+          <div class="turn" role="group" aria-label="Turn the car">
+            <button class="btn btn-ghost btn-sm" type="button" data-turn="-1">Turn left</button>
+            <button class="btn btn-ghost btn-sm" type="button" data-turn="1">Turn right</button>
+          </div>
+        </div>
+      </div>
+      <!-- the tonal arc's other lights, over the showroom's plate: the energy's (the workshop for the
+           Six, the blue night for the E) and dusk; the scene says which (html[data-light]) -->
+      <div class="lights" aria-hidden="true">
+        <div class="light light--workshop"></div>
+        <div class="light light--night"></div>
+        <div class="light light--dusk"></div>
+      </div>
+      <div class="turntable" data-turntable aria-hidden="true"></div>
+    </div>
+    <span class="showroom-mark" id="showroom-mark" tabindex="-1"></span>
+  </section>
+
+  <section class="after" aria-labelledby="after-title">
+    <div class="wrap">
+      <p class="kicker mono">Two energies</p>
+      <h2 class="h2" id="after-title">Two ways to drive it.</h2>
+      <div class="pair">
+        <article class="card"><p class="kicker mono">Electric · 800 V</p><h3 class="h3">Cordeau E</h3><p>Up to 640 km WLTP, 10 to 80 % in 19 minutes.</p></article>
+        <article class="card card--six"><p class="kicker mono">Straight-six · twin-turbo</p><h3 class="h3">Cordeau Six</h3><p>550 ch, 650 Nm, 0 to 100 km/h in 3.6 s.</p></article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- poster: the scene's first frame, written by tools/bake-posters.mjs -->
+<div class="poster" aria-hidden="true"><div class="poster-frame"><picture>
+  <source media="(max-aspect-ratio: 850/1000)" type="image/avif" srcset="poster-portrait.avif?v=77a0a53c" width="912" height="488">
+  <source media="(max-aspect-ratio: 850/1000)" type="image/webp" srcset="poster-portrait.webp?v=77a0a53c" width="912" height="488">
+  <source type="image/avif" srcset="poster-landscape.avif?v=ad73ae2e" width="2592" height="571">
+  <img src="poster-landscape.webp?v=ad73ae2e" alt="" width="2592" height="571" fetchpriority="high">
+</picture></div></div>
+<!-- /poster -->
+<canvas class="scene" data-scene aria-hidden="true"></canvas>
+<!-- over the canvas, like the header: it captions the drowned glass -->
+<p class="water-caption mono" data-water-caption aria-hidden="true">01 → 02 · Showroom</p>
+<!-- the configurators journey (the user, 2026-11-10): one panel per chapter, over the canvas; the
+     scene shows the chapter's own (data-chapter). Without the scene they stack after the landing. -->
+<div class="journey" data-journey role="region" aria-label="Configure your Cordeau">
+  <!-- the exterior and the cabin dock under the car (the tonal arc, 2026-11-16): on a wide screen
+       their title stands large over the scene and their choices lie in a compact glass dock at the
+       bottom left, in tabs; on a phone both stay in the sheet (the wrappers then lay out as nothing) -->
+  <section class="journey-panel journey-panel--dock" data-panel="exterior" aria-labelledby="cfg-exterior">
+    <div class="journey-head">
+      <p class="kicker mono">03 · Exterior</p>
+      <h2 class="h2" id="cfg-exterior" tabindex="-1">Colour, metal, line.</h2>
+    </div>
+    <!-- the exterior's choices in three tabs, as the cabin's (the user's feedback of 2026-11-16: the menu
+         hid the render): the paint, the wheels and their finish, the accents (calipers, brightwork) -->
+    <div class="journey-dock" id="dock-exterior">
+      <div class="cfg-tabs" role="tablist" aria-label="Exterior options">
+        <button class="cfg-tab" type="button" role="tab" id="tab-paint" aria-controls="tabpanel-paint" aria-selected="true"><span class="cfg-tab-name mono">Paint</span><span class="visually-hidden">: </span><span class="cfg-tab-choice" data-choice="paint"><span class="cfg-dot" aria-hidden="true"></span><span class="cfg-tab-value"><span data-paint-name></span><span class="cfg-tab-more" data-paint-finish></span></span></span></button>
+        <button class="cfg-tab" type="button" role="tab" id="tab-wheels" aria-controls="tabpanel-wheels" aria-selected="false" tabindex="-1"><span class="cfg-tab-name mono">Wheels</span><span class="visually-hidden">: </span><span class="cfg-tab-choice" data-choice="wheel rims"><span class="cfg-dot" aria-hidden="true"></span><span class="cfg-tab-value" data-choice-label></span></span></button>
+        <button class="cfg-tab" type="button" role="tab" id="tab-accents" aria-controls="tabpanel-accents" aria-selected="false" tabindex="-1"><span class="cfg-tab-name mono">Accents</span><span class="visually-hidden">: </span><span class="cfg-tab-choice" data-choice="calipers brightwork"><span class="cfg-dot" aria-hidden="true"></span><span class="cfg-tab-value" data-choice-label></span></span></button>
+      </div>
+      <div class="cfg-tabpanels">
+        <div class="cfg-tabpanel" role="tabpanel" id="tabpanel-paint" aria-labelledby="tab-paint">
+          <fieldset class="cfg cfg--paint"><legend class="visually-hidden">Paint</legend><div class="cfg-swatches" data-options="paint"></div></fieldset>
+        </div>
+        <div class="cfg-tabpanel cfg-tabpanel--pair" role="tabpanel" id="tabpanel-wheels" aria-labelledby="tab-wheels" hidden>
+          <fieldset class="cfg"><legend class="visually-hidden">Wheels</legend><div class="cfg-chips" data-options="wheel"></div></fieldset>
+          <fieldset class="cfg cfg--inline"><legend class="mono">Finish</legend><div class="cfg-chips" data-options="rims"></div></fieldset>
+        </div>
+        <div class="cfg-tabpanel cfg-tabpanel--pair" role="tabpanel" id="tabpanel-accents" aria-labelledby="tab-accents" hidden>
+          <fieldset class="cfg cfg--inline"><legend class="mono">Calipers</legend><div class="cfg-chips" data-options="calipers"></div></fieldset>
+          <fieldset class="cfg cfg--inline"><legend class="mono">Brightwork</legend><div class="cfg-chips" data-options="brightwork"></div></fieldset>
+        </div>
+      </div>
+      <p class="cfg-total"><span class="mono">Total, VAT included</span> <b data-total></b></p>
+      <button class="dock-fold" type="button" aria-expanded="true" aria-controls="dock-exterior" data-dock-fold><svg class="dock-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="visually-hidden">Hide the options</span></button>
+    </div>
+    <!-- folded, the dock leaves this pill: the total, and the way back to the options -->
+    <button class="dock-pill" type="button" aria-expanded="true" aria-controls="dock-exterior" data-dock-fold><svg class="dock-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="mono">Options</span> <b data-total></b></button>
+  </section>
+  <section class="journey-panel journey-panel--dock" data-panel="cabin" aria-labelledby="cfg-cabin">
+    <div class="journey-head">
+      <p class="kicker mono">04 · The cabin</p>
+      <h2 class="h2" id="cfg-cabin" tabindex="-1">Sit where the line begins.</h2>
+    </div>
+    <!-- the cabin's three choices in tabs (2026-11-16): one group open at a time, each tab reading its
+         group's choice, so the dock still says the whole cabin; the panels share one cell, and the
+         dock keeps its height from tab to tab -->
+    <div class="journey-dock" id="dock-cabin">
+      <div class="cfg-tabs" role="tablist" aria-label="Cabin options">
+        <button class="cfg-tab" type="button" role="tab" id="tab-trim" aria-controls="tabpanel-trim" aria-selected="true"><span class="cfg-tab-name mono">Interior</span><span class="visually-hidden">: </span><span class="cfg-tab-choice" data-choice="trim"><span class="cfg-dot" aria-hidden="true"></span><span class="cfg-tab-value" data-choice-label></span></span></button>
+        <button class="cfg-tab" type="button" role="tab" id="tab-inlay" aria-controls="tabpanel-inlay" aria-selected="false" tabindex="-1"><span class="cfg-tab-name mono">Inlays</span><span class="visually-hidden">: </span><span class="cfg-tab-choice" data-choice="inlay"><span class="cfg-dot" aria-hidden="true"></span><span class="cfg-tab-value" data-choice-label></span></span></button>
+        <button class="cfg-tab" type="button" role="tab" id="tab-blade" aria-controls="tabpanel-blade" aria-selected="false" tabindex="-1"><span class="cfg-tab-name mono">Light blade</span><span class="visually-hidden">: </span><span class="cfg-tab-choice" data-choice="blade"><span class="cfg-dot cfg-dot--glow" aria-hidden="true"></span><span class="cfg-tab-value" data-choice-label></span></span></button>
+      </div>
+      <div class="cfg-tabpanels">
+        <div class="cfg-tabpanel" role="tabpanel" id="tabpanel-trim" aria-labelledby="tab-trim">
+          <fieldset class="cfg cfg--trims"><legend class="visually-hidden">Interior</legend><div class="cfg-cards" data-options="trim"></div></fieldset>
+        </div>
+        <div class="cfg-tabpanel" role="tabpanel" id="tabpanel-inlay" aria-labelledby="tab-inlay" hidden>
+          <fieldset class="cfg"><legend class="visually-hidden">Inlays</legend><div class="cfg-chips" data-options="inlay"></div></fieldset>
+        </div>
+        <div class="cfg-tabpanel" role="tabpanel" id="tabpanel-blade" aria-labelledby="tab-blade" hidden>
+          <fieldset class="cfg"><legend class="visually-hidden">Light blade</legend><div class="cfg-chips" data-options="blade"></div></fieldset>
+        </div>
+      </div>
+      <p class="cfg-total"><span class="mono">Total, VAT included</span> <b data-total></b></p>
+      <button class="dock-fold" type="button" aria-expanded="true" aria-controls="dock-cabin" data-dock-fold><svg class="dock-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="visually-hidden">Hide the options</span></button>
+    </div>
+    <!-- folded, the dock leaves this pill: the total, and the way back to the options -->
+    <button class="dock-pill" type="button" aria-expanded="true" aria-controls="dock-cabin" data-dock-fold><svg class="dock-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="mono">Options</span> <b data-total></b></button>
+  </section>
+  <section class="journey-panel" data-panel="energy" aria-labelledby="cfg-energy">
+    <p class="kicker mono">05 · Energy</p>
+    <h2 class="h2" id="cfg-energy" tabindex="-1">Choose what moves you.</h2>
+    <fieldset class="cfg"><legend class="mono">Energy</legend><div class="cfg-cards cfg-cards--two" data-options="energy"></div></fieldset>
+    <fieldset class="cfg"><legend class="mono">Version</legend><div class="cfg-cards cfg-cards--two" data-options="version"></div></fieldset>
+    <fieldset class="cfg cfg--inline" data-six-only><legend class="mono">Exhaust</legend><div class="cfg-chips" data-options="exhaust"></div></fieldset>
+    <fieldset class="cfg cfg--inline" data-six-only><legend class="mono">Engine cover</legend><div class="cfg-chips" data-options="cover"></div></fieldset>
+    <dl class="cfg-figures" data-figures></dl>
+    <p class="cfg-legal" data-legal></p>
+    <p class="cfg-total"><span class="mono">Total, VAT included</span> <b data-total></b></p>
+  </section>
+  <section class="journey-panel" data-panel="finale" aria-labelledby="cfg-finale">
+    <p class="kicker mono">06 · Yours</p>
+    <h2 class="h2" id="cfg-finale" tabindex="-1">Exactly as you made it.</h2>
+    <dl class="cfg-summary" data-summary></dl>
+    <p class="cfg-total"><span class="mono">Total, VAT included</span> <b data-total></b></p>
+    <div class="ctas"><a class="btn btn-accent" href="#demo-notice" data-demo>Book a test drive</a><a class="btn btn-ghost" href="#demo-notice" data-demo>Find it in stock</a></div>
+  </section>
+</div>
+<footer class="site-footer">
+  <p>Aplomb and the Cordeau are fictional: a portfolio piece in real-time 3D by <a href="https://adamrodwebdev.com">AdamRodWebTech</a>.</p>
+  <p><a href="legal.html">Legal notice and privacy</a></p>
+</footer>
+<!-- the demo's notice (2026-11-16, the site live): Aplomb is fictional, so "Test drive" and "Find it in
+     stock" open this instead of going nowhere; its close button is always there (the user's rule) -->
+<dialog class="demo-notice" id="demo-notice" aria-labelledby="demo-title" data-demo-notice>
+  <div class="demo-body">
+    <button class="demo-close" type="button" data-demo-close aria-label="Close the notice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    <p class="kicker mono">Portfolio demo</p>
+    <h2 class="h2" id="demo-title">Aplomb is a fictional brand.</h2>
+    <p>The Cordeau, its test drives and its stock exist only on this page: a study in real-time 3D web design by AdamRodWebTech.</p>
+    <div class="ctas"><a class="btn btn-accent" href="https://adamrodwebdev.com">See the studio's work</a><button class="btn btn-ghost" type="button" data-demo-close>Back to the car</button></div>
+  </div>
+</dialog>
+<!-- the exploded engine's notes ("Épure Aplomb", the user's choice of 2026-11-15): true figures, each
+     pinned on its part by the scene while the parts are apart; only the configured powertrain's -->
+<ul class="engine-notes" data-engine-notes aria-label="The engine, apart" aria-hidden="true">
+  <li class="engine-note" data-part="MDL_engine_camshafts" data-energy="six" data-priority="2"><span><b>Two camshafts</b> on a chain</span></li>
+  <li class="engine-note" data-part="MDL_engine_turbo_F_turbine" data-energy="six" data-priority="1"><span><b>Two turbos</b> one per three cylinders</span></li>
+  <li class="engine-note" data-part="MDL_engine_pistons" data-energy="six" data-priority="1"><span><b>84 × 90 mm</b> 2,993 cm³</span></li>
+  <li class="engine-note" data-part="MDL_engine_crankshaft" data-energy="six" data-priority="1"><span><b>Forged crank</b> seven main bearings</span></li>
+  <li class="engine-note" data-part="MDL_engine_starter_generator" data-energy="six" data-priority="2"><span><b>48 V</b> starter-generator</span></li>
+  <li class="engine-note" data-part="MDL_motor_front" data-energy="e" data-version="Signature" data-priority="1"><span><b>Front motor</b> 150 kW</span></li>
+  <li class="engine-note" data-part="MDL_motor_inverter" data-energy="e" data-version="Signature" data-priority="1"><span><b>Inverter</b> 800 V</span></li>
+  <li class="engine-note" data-part="MDL_boot_tub" data-energy="e" data-priority="1"><span><b>Front boot</b> 60 L</span></li>
+</ul>
+<svg class="filters" width="0" height="0" aria-hidden="true" focusable="false">
+  <!-- the title's reflection: bands of ripple, long across and short down, drifting slowly -->
+  <filter id="water-ripple" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.11" numOctaves="2" seed="7" result="waves">
+      <animate attributeName="baseFrequency" dur="11s" values="0.006 0.11;0.007 0.125;0.006 0.11" repeatCount="indefinite"/>
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="waves" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<output class="debug mono" data-debug hidden></output>
+</body>
+</html>

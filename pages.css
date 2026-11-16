@@ -1,0 +1,17 @@
+/* The site's two quiet pages, the legal notice and the 404 (2026-11-16): the page's tokens and type
+   from drift.css, a header with the brand and the way back, one readable column. */
+.page-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  width: min(100% - 2rem, 46rem); margin: 0 auto; padding: 1rem 0;
+}
+.page-body { width: min(100% - 2rem, 46rem); margin: 0 auto; padding: 2rem 0 4rem; }
+.page-body h1 {
+  margin: 0.5rem 0 1.25rem; font-family: 'Aplomb Estoc', 'Estoc Fallback', sans-serif; font-weight: 400;
+  font-size: clamp(2.2rem, 1.4rem + 3vw, 3.6rem); line-height: 0.98; text-transform: uppercase; text-wrap: balance;
+}
+.page-body h2 { margin: 2.25rem 0 0.5rem; font-size: 1.05rem; letter-spacing: 0.02em; }
+.page-body p { margin: 0 0 0.75rem; max-width: 65ch; color: var(--ink-2); line-height: 1.6; }
+.page-body .lead { color: var(--ink); font-size: 1.1rem; }
+.page-body a { color: var(--ink); text-underline-offset: 0.2em; }
+.page-body section[lang='fr'] { margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.page-body .btn { margin-top: 1rem; }
