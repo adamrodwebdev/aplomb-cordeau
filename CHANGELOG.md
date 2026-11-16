@@ -4,6 +4,16 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-11-16
+
+### Changed
+
+- The Six's straight-six in full detail, the same engine as its store kit: an open valve train (two
+  camshafts, 24 valves, springs and roller followers), the timing chain, bladed turbo wheels, direct
+  injection, the oil and cooling circuits, heat shields, the harness and the bolts. Its cover sits
+  80 mm under the bonnet, and its notes point at the camshafts and the middle piston. The file grows
+  from 1.6 to 2.8 MB and still loads only when the visitor heads for the configurators.
+
 ## [1.0.1] - 2026-11-16
 
 ### Fixed
