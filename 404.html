@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" class="js no-scene" data-light="page">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-kSBCTYJ8uiNOM0qN9aGQfE0rDgg2cjbp+3TrTm1B98o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+<base href="/aplomb-cordeau/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · Aplomb Cordeau</title>
+<meta name="description" content="This address leads to no page of the Aplomb Cordeau.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>(() => { let theme = null; try { const saved = localStorage.getItem('aplomb-theme'); if (saved === 'light' || saved === 'dark') theme = saved; } catch {} document.documentElement.dataset.theme = theme ?? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); })();</script>
+<link rel="stylesheet" href="fonts/web-fonts.css">
+<link rel="stylesheet" href="drift.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+<a class="skip" href="#content">Skip to the content</a>
+<header class="page-head">
+  <a class="brand" href="./" aria-label="Aplomb, back to the Cordeau"><svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4 6 36M20 4l14 32M20 4v21" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="m20 25 3.2 4.6L20 34l-3.2-4.4Z" fill="var(--brass-fill)"/></svg><span class="brand-word">Aplomb</span></a>
+  <a class="btn btn-ghost btn-sm" href="./">Back to the car</a>
+</header>
+<main class="page-body" id="content">
+  <p class="kicker mono">404</p>
+  <h1>This road leads nowhere.</h1>
+  <p class="lead">The address matches no page of this site.</p>
+  <a class="btn btn-accent" href="./">Back to the Cordeau</a>
+</main>
+<footer class="site-footer">
+  <p>Aplomb and the Cordeau are fictional: a portfolio piece in real-time 3D by <a href="https://adamrodwebdev.com">AdamRodWebTech</a>.</p>
+</footer>
+</body>
+</html>
