@@ -549,7 +549,7 @@ html[data-light='page'] .plumb { opacity: 0; visibility: hidden; transition: opa
 }
 .cfg-option--energy, .cfg-option--version { grid-template-columns: 1fr; }
 .cfg-option--trim { flex: 1 1 11rem; }
-/* The cabin's tabs share one height (the tallest panel's): the four trims stand in one row, never
+/* The cabin's tabs share one height (the tallest panel's): the five trims stand in one row, never
    two, so the inlays' and the light blade's single rows leave no hole under them */
 .cfg--trims .cfg-cards { flex-wrap: nowrap; }
 /* a narrow panel (the phone's sheet): the trims' cards tighter */
@@ -574,11 +574,14 @@ html[data-light='page'] .plumb { opacity: 0; visibility: hidden; transition: opa
   .cfg-swatches[data-options='paint'] { gap: 0.25rem; }
   .cfg--trims .cfg-option--trim { width: 9rem; }
 }
-/* a dock wide enough over the scene (a tablet's sheet, a desktop's dock): each trim in two lines,
-   the name, then the cloth and its price */
+/* a dock wide enough over the scene (a tablet's sheet, a desktop's dock): each trim in three short
+   lines, the name, the cloth, then its price, so the five trims fit the dock from 1,024 px on (in two
+   lines they made it 1,050 px wide, and it scrolled sideways under 1,216 px) */
 @container journey-panel (width >= 30rem) {
   .has-scene .cfg--trims .cfg-option--trim { flex: none; width: auto; padding: 0.4rem 0.85rem; }
   .has-scene .cfg--trims .cfg-option--trim > span:last-child { white-space: nowrap; font-size: 0.8rem; }
+  .has-scene .cfg--trims .cfg-option--trim .cfg-sep { display: none; }
+  .has-scene .cfg--trims .cfg-option--trim .cfg-price { display: block; }
 }
 @media (width < 64rem) and (hover: hover) and (pointer: fine) {
   :is(.cfg-swatches[data-options='paint'], .cfg-chips:is([data-options='inlay'], [data-options='blade']), .cfg--trims .cfg-cards, .cfg-tabpanel--pair) { scrollbar-width: thin; padding-block-end: 0.4rem; }
@@ -739,6 +742,11 @@ html[data-light='page'] .plumb { opacity: 0; visibility: hidden; transition: opa
     box-shadow: 0 1.5rem 3rem -0.75rem rgb(0 0 0 / 0.35);
     transition: opacity 0.3s ease, translate 0.3s ease, visibility 0s;
   }
+  /* The cabin's six inlays in two rows of three: in one row they made the dock 1,050 px wide (the
+     carbon twill, 2026-11-17), where the tabs and the total set 823 px, as the exterior's. Each group
+     sits centred in the band the tallest one sets (the trims' three lines, the inlays' two rows). */
+  .has-scene .journey-panel--dock .cfg-chips[data-options='inlay'] { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; }
+  .has-scene .journey-panel--dock .cfg-tabpanel { align-content: center; }
   /* The dock folds away (the user's request, 2026-11-16: to see the render in full): the button at
      its corner folds both docks, each leaving a pill with its total that unfolds them. A fade and a
      slide; the pill shares the dock's cell, so nothing else moves. Shown, the pill inherits its

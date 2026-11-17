@@ -4,6 +4,30 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-17
+
+### Added
+
+- The Nacre interior, the store kits' 100,000-euro trim, now dresses the landing's car: pearl Nappa
+  bolsters; dark microfibre on the dash, the steering wheel's rim and the inserts, which are
+  perforated; contrast stitching. The wool blends and the other Nappa leathers stay as options.
+- Carbon twill inlays under a full gloss coat, the landing's choice; the woods and the brushed
+  aluminium stay as options.
+- In the cabin: the steering wheel's key labels, lit vanity mirrors in the sun visors, the passenger
+  airbag's key switch and its telltale in the roof console, the 12 V socket's cap.
+
+### Changed
+
+- The steering wheel sits 80 mm lower with its column, stalks and paddles, so the display reads
+  above its rim from the driver's seat; its flat bottom rises 20 mm.
+- The pedals, the footrest and the heel pad move 100 mm forward into a deeper footwell, with a longer
+  driver's mat: room for tall drivers' legs. The engine bay's apron is notched to clear it.
+- The seats' heads are closed in leather and their cushions' fronts rounded off; the rear mats are
+  cut round the seat rails.
+- The landing's car now totals €101,500 (Nacre +€2,200, carbon twill +€1,200).
+- On a wide screen, the cabin's dock stays as narrow as the exterior's with five trims and six inlays:
+  each trim gives its price a line of its own, and the inlays sit in two rows of three.
+
 ## [1.1.0] - 2026-11-16
 
 ### Changed

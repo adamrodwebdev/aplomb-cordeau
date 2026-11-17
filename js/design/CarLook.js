@@ -30,6 +30,34 @@ const ROLES = Object.freeze({
 const ROLE_OF = new Map(Object.entries(ROLES).flatMap(([role, names]) => names.map((name) => [name, role])));
 const COLOURS = Object.freeze(['color', 'emissive', 'sheenColor']);
 
+/**
+ * How each upholstery finish catches the light, by surface (a trim's `finish`): its roughness and
+ * sheen, and `leather`, which eases in the inserts' perforations and grain and the bolsters' creases
+ * (Materials' UPHOLSTERY and CREASE). The microfibre inserts are perforated, as the store kits' are.
+ */
+const TRIM_FINISHES = new Map([
+  ['main', new Map([
+    ['wool', Object.freeze({ roughness: 0.95, sheen: 0.6, leather: 0 })],
+    ['nappa', Object.freeze({ roughness: 0.42, sheen: 0.08, leather: 1 })],
+    ['microfibre', Object.freeze({ roughness: 0.94, sheen: 0.45, leather: 1 })],
+  ])],
+  ['bolster', new Map([
+    ['microfibre', Object.freeze({ roughness: 0.92, sheen: 0.5, leather: 0 })],
+    ['nappa', Object.freeze({ roughness: 0.45, sheen: 0.08, leather: 1 })],
+  ])],
+  ['dash', new Map([
+    ['microfibre', Object.freeze({ roughness: 0.94, sheen: 0.4 })],
+    ['nappa', Object.freeze({ roughness: 0.55, sheen: 0.05 })],
+  ])],
+]);
+
+/** A surface's finish by its name; a trim naming one that is not drawn is a catalogue error */
+function finishOf(surface, name) {
+  const finish = TRIM_FINISHES.get(surface)?.get(name);
+  if (!finish) throw new Error(`no ${surface} finish "${name}"`);
+  return finish;
+}
+
 /** A material's colours and numbers easing towards their targets */
 class Easing {
   #material;
@@ -132,20 +160,22 @@ export class CarLook {
       part.aim({ color: shadow ? colour(options.brightwork.hex) : part.rest.colour },
         { metalness: shadow ? 0.2 : part.rest.metalness, roughness: shadow ? 0.48 : part.rest.roughness });
     }
-    // the cabin: wool or Nappa, its bolsters, the light plastics, the dash's dark top
-    const { leather, palette } = options.trim;
+    // the cabin: each surface in its trim's finish (wool, Nappa with perforated inserts and creased
+    // bolsters, or microfibre), the light plastics, the dash's dark top, the headliner
+    const { finish: surfaces, palette, seams } = options.trim;
     const sheen = (hex, lift) => colour(hex).lerp(WHITE, lift);
-    // the leather trims: perforated Nappa inserts, creased bolsters (`leather` eases the patterns in)
-    const hide = leather ? 1 : 0;
-    this.#aim('main', { color: palette.main, sheenColor: sheen(palette.main, 0.3) }, { roughness: leather ? 0.42 : 0.95, sheen: leather ? 0.08 : 0.6, leather: hide });
-    this.#aim('bolster', { color: palette.bolster, sheenColor: sheen(palette.bolster, 0.3) }, { roughness: leather ? 0.45 : 0.92, sheen: leather ? 0.08 : 0.5, leather: hide });
+    this.#aim('main', { color: palette.main, sheenColor: sheen(palette.main, 0.3) }, finishOf('main', surfaces.main));
+    this.#aim('bolster', { color: palette.bolster, sheenColor: sheen(palette.bolster, 0.3) }, finishOf('bolster', surfaces.bolster));
     this.#aim('vinyl', { color: palette.dash, sheenColor: sheen(palette.dash, 0.2) });
-    this.#aim('seam', { color: leather ? SEAM_CONTRAST : colour(palette.bolster).multiplyScalar(0.8) });
+    this.#aim('seam', { color: seams === 'contrast' ? SEAM_CONTRAST : colour(palette.bolster).multiplyScalar(0.8) });
     this.#aim('plastic', { color: palette.plastic });
-    this.#aim('dash', { color: palette.dash, sheenColor: sheen(palette.dash, 0.25) }, { roughness: leather ? 0.55 : 0.94, sheen: leather ? 0.05 : 0.4 });
+    this.#aim('dash', { color: palette.dash, sheenColor: sheen(palette.dash, 0.25) }, finishOf('dash', surfaces.dash));
     this.#aim('headliner', { color: palette.headliner, sheenColor: sheen(palette.headliner, 0.2) });
+    // the inlay: a wood's grain, brushed aluminium, or carbon twill under its gloss coat
     const inlay = options.inlay;
-    this.#aim('inlay', { color: inlay.hex }, { grain: inlay.grain, figure: inlay.figure ?? 0, metalness: inlay.grain ? 0 : 1, roughness: inlay.grain ? 0.46 : 0.32 });
+    this.#aim('inlay', { color: inlay.hex }, {
+      grain: inlay.grain, figure: inlay.figure, weave: inlay.weave, metalness: inlay.metalness, roughness: inlay.roughness, ...inlay.coat,
+    });
     this.#aim('blade', { emissive: options.blade.hex });
     const cover = options.cover;
     this.#aim('cover', { color: cover.hex }, { metalness: cover.metalness, roughness: cover.roughness, weave: cover.weave });

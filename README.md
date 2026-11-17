@@ -17,8 +17,8 @@ nothing is for sale, no form sends anything, and the prices and figures are illu
   the finale. The light follows it: dawn, a white or night studio, the warm workshop for the Six or the
   blue night for the E, then dusk. The paint reflects each one.
 - **A configurator inside the scene:** eight paints, three wheel designs and their finishes, calipers
-  and brightwork, four interior trims, five inlays, the light blade's colour, two energies and their
-  versions. The price rolls like a counter. On a wide screen the choices sit in a compact dock in tabs,
+  and brightwork, five interior trims and six inlays (Nappa, microfibre and carbon twill by default),
+  the light blade's colour, two energies and their versions. The price rolls like a counter. On a wide screen the choices sit in a compact dock in tabs,
   which folds away to leave the render whole.
 - **The straight-six opens** into an exploded view as you scroll, with notes on its parts.
 - **For every visitor:** a keyboard table of contents (the plumb line at the edge), light and dark

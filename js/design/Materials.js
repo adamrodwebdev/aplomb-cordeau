@@ -206,13 +206,14 @@ const HEXPERF = /* glsl */ `
   }
 `;
 
-/* Carbon on the engine cover: a 2/2 twill of 6 mm tows on the bias across the part's top (its
-   local x and z), each tow over two and under two; the tows of one direction catch more light than
-   the other's, each rounded across its width. Below about a pixel a cell fades to its mean.
-   `uWeave` 0 leaves the plain finish (brass, graphite) */
+/* Carbon: a 2/2 twill of 6 mm tows on the bias across the surface's own plane (the engine cover's
+   top, the inlays' strips facing the cabin), each tow over two and under two; the tows of one
+   direction catch more light than the other's, each rounded across its width. Below about a pixel
+   a cell fades to its mean. `uWeave` 0 leaves the plain finish (brass, graphite, the woods) */
 const WEAVE = /* glsl */ `
   {
-    vec2 q = vec2(vMetric.x + vMetric.z, vMetric.x - vMetric.z) * 118.0;
+    vec2 plane = aplombPlane(vMetric, vLocalNormal);
+    vec2 q = vec2(plane.x + plane.y, plane.x - plane.y) * 118.0;
     vec2 cell = floor(q);
     vec2 f = fract(q);
     float over = step(mod(cell.x + cell.y, 4.0), 1.5);
@@ -273,7 +274,7 @@ export function dress(material, {
   const flags = { paint, tread, disc, wood: Boolean(wood), screen: Boolean(screen), frit: Boolean(frit), weave, lift: Boolean(lift), upholstery, crease, pebble, louvre, perforation, heat: Boolean(heat), ao };
   const key = `aplomb7-${Object.entries(flags).filter(([, on]) => on).map(([name]) => name).join('-')}`;
   const leather = upholstery || crease;
-  const surface = leather || pebble || perforation;
+  const surface = leather || pebble || perforation || weave; // the twill lies on the surface's plane too
   if (leather) material.userData.leather = { value: 0 };
   if (weave) material.userData.weave = { value: 0 };
   if (paint) material.userData.flake = { value: 1 };
@@ -417,7 +418,8 @@ export const LOOKS = Object.freeze({
   // the brief of 2026-11-15: soft-touch vinyl on the doors' tops, the doors' layered wood strips,
   // the hidden vent, the hexagonal grilles, anodised and knurled aluminium, black glass keys, the pad
   'vinyl-soft': { set: { color: 0x47433f, roughness: 0.62, metalness: 0, sheen: 0.15, sheenRoughness: 0.5, sheenColor: 0x6a655f }, pebble: true },
-  'ash-door': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'y' },
+  // the inlays (CarLook): an open-pore wood, brushed aluminium or carbon twill (`weave`)
+  'ash-door': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'y', weave: true },
   'vent-louvre': { set: { color: 0x1a1a1b, roughness: 0.7, metalness: 0 }, louvre: true },
   speaker: { set: { color: 0x3e3f40, roughness: 0.45, metalness: 1 }, perforation: true },
   'alu-anodised': { set: { color: 0xc4c7ca, roughness: 0.38, metalness: 1 } },
@@ -432,8 +434,8 @@ export const LOOKS = Object.freeze({
   'trim-dark': { set: { color: 0x2c2a28, roughness: 0.62, metalness: 0 } },
   carpet: { set: { color: 0x3b3835, roughness: 1, sheen: 0.5, sheenRoughness: 0.5, sheenColor: 0x6b6660 } },
   'carpet-mat': { set: { color: 0x4c4844, roughness: 1, sheen: 0.5, sheenRoughness: 0.5, sheenColor: 0x7a756e } },
-  'ash-dash': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'y' },
-  'ash-bridge': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'x' },
+  'ash-dash': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'y', weave: true },
+  'ash-bridge': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'x', weave: true },
   'alu-brushed': { set: { color: 0xd3d6d8, roughness: 0.3, metalness: 1 } },
   'alu-brushed-y': { set: { color: 0xd3d6d8, roughness: 0.3, metalness: 1 } },
   'vent-slots': { set: { color: 0x0d0d0e, roughness: 0.7, metalness: 0 } },
