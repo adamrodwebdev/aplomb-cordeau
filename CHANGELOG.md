@@ -4,6 +4,20 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.1] - 2026-11-17
+
+### Fixed
+
+- The loader's bar now fills as the car's file arrives on the live site too. GitHub Pages sends the
+  file compressed, so its length is the compressed one: the bar stood at 10 % for the whole download,
+  then jumped. It now counts the bytes as they come out against the file's known size, and the site's
+  build refuses to run if that size ever stops matching the file.
+- A slow connection no longer drops the visitor to the page without 3D while the car is still coming:
+  every byte, and every file of the scene's code, now counts as the loading moving (a 1.1 Mbit/s visit
+  took 24 s and came live). The bar also moves while that code loads, instead of waiting at 0 %.
+  The page waits 30 s for a sign while that code comes (its biggest file gives none until it lands),
+  12 s once the car's file is coming, and a minute and a half in all.
+
 ## [1.3.0] - 2026-11-17
 
 ### Added

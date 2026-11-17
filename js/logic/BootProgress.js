@@ -4,11 +4,13 @@
  * each change, and `changedAt` tells the watchdog whether the boot still moves. Time comes from the
  * injected `now` (milliseconds). No DOM, no three.js.
  */
-import { BOOT_STEPS, bootPhase, bytesShare } from '../rules/boot.js';
+import { BOOT_STEPS, bootPhase, bytesShare, codeShare } from '../rules/boot.js';
 
 export class BootProgress {
   #now;
   #value = 0;
+  #codeFiles = 0;
+  #received = 0;
   #changedAt;
   #listeners = new Set();
 
@@ -31,7 +33,7 @@ export class BootProgress {
     return this.#value >= BOOT_STEPS.live;
   }
 
-  /** When the value last grew, on the injected clock */
+  /** When the boot last moved (a step, or new bytes of the body), on the injected clock */
   get changedAt() {
     return this.#changedAt;
   }
@@ -42,8 +44,20 @@ export class BootProgress {
     this.#grow(BOOT_STEPS[step]);
   }
 
-  /** The body's file: `received` bytes of `total` */
+  /** One more of the scene's code files is in (the bar creeps toward the code's step) */
+  codeFile() {
+    this.#codeFiles += 1;
+    this.#grow(codeShare(this.#codeFiles));
+  }
+
+  /**
+   * The body's file: `received` bytes of `total`. New bytes are the boot moving even when the bar
+   * cannot grow (past the file's expected size): the watchdog must not take a slow download for a stall.
+   */
   bytes(received, total) {
+    if (!Number.isSafeInteger(received) || received <= this.#received) return;
+    this.#received = received;
+    this.#changedAt = this.#now();
     this.#grow(bytesShare(received, total));
   }
 
