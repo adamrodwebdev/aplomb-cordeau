@@ -14,6 +14,7 @@
 import { readFlags } from './logic/flags.js';
 import { Configuration } from './logic/Configuration.js';
 import { BootProgress } from './logic/BootProgress.js';
+import { BOOT_STEPS } from './rules/boot.js';
 import { StoryGate } from './design/StoryGate.js';
 import { Configurator } from './design/Configurator.js';
 import { OptionTabs } from './design/OptionTabs.js';
@@ -53,9 +54,13 @@ new DemoNotice(document.querySelector('[data-demo-notice]'), document.querySelec
 
 // The boot's watchdog (the story gate, 2026-11-17): the page stacks when the boot stops moving for
 // STALL_MS (each step and each byte of the body counts), or is not up after LIMIT_MS. It was a flat
-// 8 s, which a first visit on a slow network could pass while the car was still coming.
+// 8 s, which a first visit on a slow network could pass while the car was still coming. While the
+// code comes, its biggest module travels with no sign until it lands: that wait gets CODE_STALL_MS.
+// On a 1.1 Mbit/s line a first visit took 24 s (2026-11-17); the visitor can always take the page
+// without 3D from the gate.
+const CODE_STALL_MS = 30000;
 const STALL_MS = 12000;
-const LIMIT_MS = 60000;
+const LIMIT_MS = 90000;
 const headline = document.getElementById('road-title');
 let gate = null;
 
@@ -65,6 +70,24 @@ function fallBack(reason) {
   html.classList.remove('has-scene');
   html.classList.add('no-scene');
   gate?.release();
+}
+
+/**
+ * While the scene's code comes (some forty modules, three.js among them, with no byte count), each
+ * file that lands moves the bar a little and tells the watchdog the boot still moves: on a slow
+ * network this phase alone took 6 s at 0 % (2026-11-17). Returns the way to stop counting.
+ */
+function countCodeFiles(progress) {
+  if (typeof PerformanceObserver !== 'function') return () => {};
+  const observer = new PerformanceObserver((list) => {
+    for (let i = list.getEntries().length; i > 0; i -= 1) progress.codeFile();
+  });
+  try {
+    observer.observe({ type: 'resource' });
+  } catch {
+    return () => {};
+  }
+  return () => observer.disconnect();
 }
 
 async function boot() {
@@ -92,11 +115,13 @@ async function boot() {
       return;
     }
     const time = now();
-    if (time - progress.changedAt > STALL_MS) fallBack(`the scene stopped coming for ${STALL_MS / 1000} s`);
+    const stall = progress.value < BOOT_STEPS.code ? CODE_STALL_MS : STALL_MS;
+    if (time - progress.changedAt > stall) fallBack(`the scene stopped coming for ${stall / 1000} s`);
     else if (time - startedAt > LIMIT_MS) fallBack(`the scene was not up after ${LIMIT_MS / 1000} s`);
   }, 1000);
+  const stopCounting = countCodeFiles(progress);
   try {
-    const { startScene } = await import('./design/startScene.js');
+    const { startScene } = await import('./design/startScene.js').finally(stopCounting);
     await startScene({
       canvas: document.querySelector('[data-scene]'),
       page: document.querySelector('[data-stage]'),

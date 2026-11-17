@@ -35,38 +35,50 @@ function declaredLength(response) {
 
 /**
  * The body, at most MAX_MODEL_BYTES, its bytes told to `onBytes(received, total)` as they come (the
- * story gate's bar). Without a declared length it is read whole, then measured.
+ * story gate's bar). `total` is the declared length; when the host compresses the file (GitHub Pages
+ * gzips GLB), the declared length is the compressed one, so the bytes, counted as they come out
+ * decoded, are told against `expected`, the file's known size. Without a way to tell, it is read
+ * whole, then measured.
  */
-async function readBody(response, onBytes) {
-  const total = declaredLength(response);
-  if (total !== null && total > MAX_MODEL_BYTES) throw new Error('model: too large');
+async function readBody(response, { onBytes = null, expected = null } = {}) {
+  const declared = declaredLength(response);
+  if (declared !== null && declared > MAX_MODEL_BYTES) throw new Error('model: too large');
+  const total = declared ?? (Number.isSafeInteger(expected) && expected > 0 ? expected : null);
   if (total === null || !response.body || !onBytes) {
     const buffer = await response.arrayBuffer();
     if (buffer.byteLength > MAX_MODEL_BYTES) throw new Error('model: too large');
     return buffer;
   }
-  const body = new Uint8Array(total);
+  const chunks = [];
   const reader = response.body.getReader();
   let received = 0;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    if (received + value.byteLength > total) {
-      await reader.cancel();
-      throw new Error('model: longer than declared');
-    }
-    body.set(value, received);
     received += value.byteLength;
+    // a declared length is a promise; the decoded body is only held to the limit
+    if (received > (declared ?? MAX_MODEL_BYTES)) {
+      await reader.cancel();
+      throw new Error(declared === null ? 'model: too large' : 'model: longer than declared');
+    }
+    chunks.push(value);
     onBytes(received, total);
   }
-  if (received !== total) throw new Error('model: shorter than declared');
+  if (declared !== null && received !== declared) throw new Error('model: shorter than declared');
+  const body = new Uint8Array(received);
+  let at = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, at);
+    at += chunk.byteLength;
+  }
   return body.buffer;
 }
 
-async function loadModel(url, onBytes = null) {
+/** `counting`: { onBytes, expected } for the story gate's bar, or nothing for a file read later */
+async function loadModel(url, counting = {}) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`model: HTTP ${response.status}`);
-  const buffer = await readBody(response, onBytes);
+  const buffer = await readBody(response, counting);
   const head = new DataView(buffer, 0, Math.min(12, buffer.byteLength));
   if (buffer.byteLength < 12 || head.getUint32(0, true) !== 0x46546c67 || head.getUint32(4, true) !== 2) throw new Error('model: not a glTF 2 binary');
   // meshopt-compressed (2.9 MB instead of 9.4 for the exterior): its decoder is WebAssembly, which a
@@ -95,7 +107,7 @@ export async function startScene({ canvas, page, landing, plumbElement, captionE
   // environments come from files: drawn here, PMREM held the main thread 0.5 s (2 s on Lighthouse's phone)
   const [environments, gltf, shadowPlate] = await Promise.all([
     Environments.load(stage.renderer, ENVIRONMENT_FILES),
-    loadModel(settings.exterior, (received, total) => bootProgress.bytes(received, total)),
+    loadModel(settings.exterior, { onBytes: (received, total) => bootProgress.bytes(received, total), expected: settings.exteriorBytes }),
     new TextureLoader().loadAsync(SHADOW),
     document.fonts.load('64px "Aplomb Estoc Fierce"').catch(() => []),
   ]);
