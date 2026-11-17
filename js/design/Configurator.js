@@ -19,7 +19,8 @@ const DRAW = Object.freeze({
   calipers: (o) => `<span class="cfg-dot" style="--swatch: ${o.hex}" aria-hidden="true"></span><span>${o.label}</span>`,
   brightwork: (o) => `<span class="cfg-dot" style="--swatch: ${o.hex ?? '#d9dde1'}" aria-hidden="true"></span><span>${o.label}</span>`,
   // what it is and its price in one phrase, which folds where the card is narrow
-  trim: (o) => `<span class="cfg-dot cfg-dot--big" style="--swatch: ${o.hex}" aria-hidden="true"></span><b>${o.label}</b><span>${o.detail} · <span class="cfg-price">${extra(o.price)}</span></span>`,
+  // a two-tone trim (Nacre's pearl and dark) paints its dot with both (`swatch`)
+  trim: (o) => `<span class="cfg-dot cfg-dot--big" style="--swatch: ${o.swatch ?? o.hex}" aria-hidden="true"></span><b>${o.label}</b><span>${o.detail}<span class="cfg-sep"> · </span><span class="cfg-price">${extra(o.price)}</span></span>`,
   inlay: (o) => `<span class="cfg-dot" style="--swatch: ${o.hex}" aria-hidden="true"></span><span>${o.label}</span>${o.price > 0 ? `<em>${extra(o.price)}</em>` : ''}`,
   blade: (o) => `<span class="cfg-dot cfg-dot--glow" style="--swatch: ${o.hex}" aria-hidden="true"></span><span>${o.label}</span>`,
   energy: (o) => `<b>${o.label}</b><span>${o.detail}</span>`,
@@ -90,7 +91,7 @@ export class Configurator {
     for (const node of this.#root.querySelectorAll('[data-choice]')) {
       const chosen = node.dataset.choice.split(' ').filter((field) => Object.hasOwn(options, field)).map((field) => options[field]);
       const tinted = chosen.find((option) => typeof option.hex === 'string');
-      if (tinted) node.style.setProperty('--swatch', tinted.hex);
+      if (tinted) node.style.setProperty('--swatch', tinted.swatch ?? tinted.hex);
       const label = node.querySelector('[data-choice-label]');
       if (!label) continue;
       const more = chosen.slice(1).map((option) => {

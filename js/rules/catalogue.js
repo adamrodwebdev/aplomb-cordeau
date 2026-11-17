@@ -53,33 +53,51 @@ export const BRIGHTWORK = freezeAll([
   { id: 'shadow', label: 'Satin black', hex: '#141517', price: 0 },
 ]);
 
+/** What a trim's surfaces are made of (CarLook draws each finish): the wool blend's, the leather's */
+const WOOL_BLEND = Object.freeze({ main: 'wool', bolster: 'microfibre', dash: 'microfibre' });
+const NAPPA = Object.freeze({ main: 'nappa', bolster: 'nappa', dash: 'nappa' });
+
 /**
- * The cabin's upholstery. Each trim dresses four of the master's materials: `main` the seats' centres
- * and the door inserts (wool), `bolster` the bolsters, armrests and wheel rim (microfibre), `plastic`
- * the light grained parts, `dash` the dark top of the dash (no glare in the screen), `headliner` the
- * roof's lining and the pillars.
+ * The cabin's upholstery. Each trim dresses five of the master's surfaces: `main` the seats' centres
+ * and the door inserts, `bolster` the bolsters and armrests, `dash` the dash's dark top (no glare in
+ * the screen), the wheel's rim and the seats' backs, `plastic` the light grained parts, `headliner`
+ * the roof's lining and the pillars. `finish` says what main, bolster and dash are made of (wool,
+ * Nappa, microfibre), `seams` whether the French seams contrast; `swatch` paints a two-tone dot.
+ * Nacre is the store kits' 100,000-euro trim (the user's "Leather, microfibre, carbon",
+ * 2026-11-16): pearl Nappa bolsters, dark microfibre perforated on the inserts, on the dash and the
+ * rim, contrast thread; the site's default since 2026-11-17, the wool blends staying as options.
  */
 export const TRIMS = freezeAll([
-  { id: 'charbon', label: 'Charbon', detail: 'Wool blend', hex: '#2E3134', leather: false, price: 0,
+  { id: 'nacre', label: 'Nacre', detail: 'Nappa · microfibre', hex: '#C9C2B6', swatch: 'linear-gradient(135deg, #C9C2B6 50%, #2F2C2A 50%)',
+    finish: Object.freeze({ main: 'microfibre', bolster: 'nappa', dash: 'microfibre' }), seams: 'contrast', price: 2200,
+    palette: Object.freeze({ main: '#2F2C2A', bolster: '#C9C2B6', plastic: '#B7B0A4', dash: '#2F2C2A', headliner: '#CFC9BF' }) },
+  { id: 'charbon', label: 'Charbon', detail: 'Wool blend', hex: '#2E3134', finish: WOOL_BLEND, seams: 'tonal', price: 0,
     palette: Object.freeze({ main: '#4B4C4E', bolster: '#3A3B3D', plastic: '#333436', dash: '#2B2B2C', headliner: '#3A3A3C' }) },
-  { id: 'perle', label: 'Perle', detail: 'Wool blend', hex: '#BDBFBC', leather: false, price: 0,
+  { id: 'perle', label: 'Perle', detail: 'Wool blend', hex: '#BDBFBC', finish: WOOL_BLEND, seams: 'tonal', price: 0,
     palette: Object.freeze({ main: '#DAD5CB', bolster: '#C5BFB4', plastic: '#B7B0A4', dash: '#47433F', headliner: '#CFC9BF' }) },
-  { id: 'sable', label: 'Sable', detail: 'Nappa leather', hex: '#C9B490', leather: true, price: 2200,
+  { id: 'sable', label: 'Sable', detail: 'Nappa leather', hex: '#C9B490', finish: NAPPA, seams: 'contrast', price: 2200,
     palette: Object.freeze({ main: '#C9B490', bolster: '#B9A27C', plastic: '#A8977A', dash: '#4A3F33', headliner: '#D3CABB' }) },
-  { id: 'cognac', label: 'Cognac', detail: 'Nappa leather', hex: '#8A5530', leather: true, price: 2200,
+  { id: 'cognac', label: 'Cognac', detail: 'Nappa leather', hex: '#8A5530', finish: NAPPA, seams: 'contrast', price: 2200,
     palette: Object.freeze({ main: '#8A5530', bolster: '#7A4728', plastic: '#5E4636', dash: '#3B2A20', headliner: '#3D3733' }) },
 ]);
 
+/** The woods' and the aluminium's satin lacquer, as the master coats the strips */
+const LACQUER = Object.freeze({ clearcoat: 0.25, clearcoatRoughness: 0.3 });
+
 /**
  * The inlays of the dash's band, the bridge and the doors' layered strips: open-pore woods
- * (`grain`; `figure` 1 bends walnut's bands into its cathedral figure) or brushed metal
+ * (`grain`; `figure` 1 bends walnut's bands into its cathedral figure), brushed metal, or carbon
+ * twill (`weave`, the store kits' 100,000-euro trim) under a full gloss coat. `metalness`,
+ * `roughness` and `coat` are each finish's own.
  */
 export const INLAYS = freezeAll([
-  { id: 'ash-light', label: 'Light ash', hex: '#CBB696', grain: 1, figure: 0, price: 0 },
-  { id: 'ash-dark', label: 'Dark ash', hex: '#4B3B2D', grain: 1, figure: 0, price: 0 },
-  { id: 'oak', label: 'Light oak', hex: '#C29A66', grain: 1, figure: 0, price: 600 },
-  { id: 'walnut', label: 'Open-pore walnut', hex: '#5A3B26', grain: 1, figure: 1, price: 800 },
-  { id: 'alu', label: 'Brushed aluminium', hex: '#C9CDD0', grain: 0, figure: 0, price: 400 },
+  { id: 'carbon', label: 'Carbon twill', hex: '#1E1F21', grain: 0, figure: 0, weave: 1, metalness: 0, roughness: 0.24,
+    coat: Object.freeze({ clearcoat: 1, clearcoatRoughness: 0.06 }), price: 1200 },
+  { id: 'ash-light', label: 'Light ash', hex: '#CBB696', grain: 1, figure: 0, weave: 0, metalness: 0, roughness: 0.46, coat: LACQUER, price: 0 },
+  { id: 'ash-dark', label: 'Dark ash', hex: '#4B3B2D', grain: 1, figure: 0, weave: 0, metalness: 0, roughness: 0.46, coat: LACQUER, price: 0 },
+  { id: 'oak', label: 'Light oak', hex: '#C29A66', grain: 1, figure: 0, weave: 0, metalness: 0, roughness: 0.46, coat: LACQUER, price: 600 },
+  { id: 'walnut', label: 'Open-pore walnut', hex: '#5A3B26', grain: 1, figure: 1, weave: 0, metalness: 0, roughness: 0.46, coat: LACQUER, price: 800 },
+  { id: 'alu', label: 'Brushed aluminium', hex: '#C9CDD0', grain: 0, figure: 0, weave: 0, metalness: 1, roughness: 0.32, coat: LACQUER, price: 400 },
 ]);
 
 /** The light blade's colour (the "Lame lumineuse" across the dash, the doors and the bridge) */
@@ -127,9 +145,12 @@ export const COVERS = freezeAll([
   { id: 'carbon', label: 'Carbon', hex: '#1E1F21', metalness: 0, roughness: 0.24, weave: 1, price: 1800 },
 ]);
 
-/** The car the landing shows: Céladon on Fan 25 wheels, the Perle cabin in light ash, the Six Signature */
+/**
+ * The car the landing shows: Céladon on Fan 25 wheels, the Nacre cabin in carbon twill (the store
+ * kits' 100,000-euro trim, the user's choice of 2026-11-17), the Six Signature
+ */
 export const DEFAULT_CHOICE = Object.freeze({
-  paint: 'celadon', wheel: 'fan', calipers: 'brass', rims: 'silver', brightwork: 'chrome', trim: 'perle', inlay: 'ash-light', blade: 'warm',
+  paint: 'celadon', wheel: 'fan', calipers: 'brass', rims: 'silver', brightwork: 'chrome', trim: 'nacre', inlay: 'carbon', blade: 'warm',
   energy: 'Six', version: 'Signature', exhaust: 'standard', cover: 'brass',
 });
 
