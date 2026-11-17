@@ -13,6 +13,8 @@
  */
 import { readFlags } from './logic/flags.js';
 import { Configuration } from './logic/Configuration.js';
+import { BootProgress } from './logic/BootProgress.js';
+import { StoryGate } from './design/StoryGate.js';
 import { Configurator } from './design/Configurator.js';
 import { OptionTabs } from './design/OptionTabs.js';
 import { DockFold } from './design/DockFold.js';
@@ -49,15 +51,50 @@ if (journey) {
 // the demo's notice: no test drive nor stock to book, it says so and leads to the maker's work
 new DemoNotice(document.querySelector('[data-demo-notice]'), document.querySelectorAll('[data-demo]')).start();
 
+// The boot's watchdog (the story gate, 2026-11-17): the page stacks when the boot stops moving for
+// STALL_MS (each step and each byte of the body counts), or is not up after LIMIT_MS. It was a flat
+// 8 s, which a first visit on a slow network could pass while the car was still coming.
+const STALL_MS = 12000;
+const LIMIT_MS = 60000;
+const headline = document.getElementById('road-title');
+let gate = null;
+
 function fallBack(reason) {
   failed = true;
   console.warn('[drift] the landing stays stacked:', reason);
   html.classList.remove('has-scene');
   html.classList.add('no-scene');
+  gate?.release();
 }
 
 async function boot() {
-  const watchdog = window.setTimeout(() => fallBack('the scene was not up after 8 s'), 8000);
+  const now = () => performance.now();
+  const progress = new BootProgress(now);
+  // a visitor who scrolls before the car is live waits at the top, the boot's progress in sight
+  const gateElement = document.querySelector('[data-gate]');
+  if (gateElement) {
+    gate = new StoryGate({
+      html,
+      element: gateElement,
+      progress,
+      focusAfter: headline,
+      onSkip: () => {
+        fallBack('the visitor chose the page without the scene');
+        headline?.focus({ preventScroll: true });
+      },
+    });
+    gate.start();
+  }
+  const startedAt = now();
+  const watchdog = window.setInterval(() => {
+    if (failed) {
+      window.clearInterval(watchdog);
+      return;
+    }
+    const time = now();
+    if (time - progress.changedAt > STALL_MS) fallBack(`the scene stopped coming for ${STALL_MS / 1000} s`);
+    else if (time - startedAt > LIMIT_MS) fallBack(`the scene was not up after ${LIMIT_MS / 1000} s`);
+  }, 1000);
   try {
     const { startScene } = await import('./design/startScene.js');
     await startScene({
@@ -75,10 +112,12 @@ async function boot() {
       debugElement: document.querySelector('[data-debug]'),
       flags,
       stopped: () => failed,
+      bootProgress: progress,
     });
-    window.clearTimeout(watchdog);
+    // up: its first frame comes with the next one (a hidden tab waits, and that is no stall)
+    window.clearInterval(watchdog);
   } catch (error) {
-    window.clearTimeout(watchdog);
+    window.clearInterval(watchdog);
     fallBack(error);
   }
 }

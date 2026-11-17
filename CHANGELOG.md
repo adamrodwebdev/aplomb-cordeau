@@ -4,6 +4,21 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-17
+
+### Added
+
+- A loader for the first visit. A visitor who scrolls before the car is ready is held at the top while
+  it loads, with its real progress (the car's file, then the engine starting) at the foot of the screen
+  and a way to the page without 3D; the drift then starts from the top. Before, the page scrolled on
+  past a still car and the drift began half way down. A visitor who takes a moment before scrolling
+  rarely sees it, and nothing changes for one who only looks.
+
+### Changed
+
+- The page gives up on the 3D scene when its loading stops moving for 12 s, or after a minute, instead
+  of after a flat 8 s, which a slow first visit could pass while the car was still coming.
+
 ## [1.2.0] - 2026-11-17
 
 ### Added

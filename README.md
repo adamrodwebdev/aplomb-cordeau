@@ -32,6 +32,8 @@ nothing is for sale, no form sends anything, and the prices and figures are illu
 - The car, the cabin and the engine come from our own procedural generators in Blender, exported as
   glTF with meshopt compression. The studio's lights are baked environment maps, decoded on the GPU.
 - The first paint is an HTML poster of the scene's first frame; the scene boots when the visitor moves.
+  A visitor who scrolls before it is up waits at the top with its real progress, or takes the page
+  without 3D.
 - Everything is served from this site: no cookies, no trackers, no request to another site. Each page
   carries a Content-Security-Policy with the hashes of its inline scripts.
 - Fonts: Aplomb Estoc (our own), Archivo and Geist Mono (SIL Open Font License 1.1).

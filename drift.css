@@ -118,7 +118,7 @@ html { cursor: default; }
    selected, nor open a phone's long-press menu; the paragraphs, the notes, the summary and the legal
    line stay selectable, with a brass tint that keeps the text's own colour. */
 :where(h1, h2, h3, label, legend, button, summary, .btn, .kicker, .mono, .headline, .lede, .masthead,
-  .plumb, .cfg-tabs, .cfg-total, .engine-notes, .water-caption, .turntable) {
+  .plumb, .cfg-tabs, .cfg-total, .engine-notes, .water-caption, .turntable, .gate) {
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
 ::selection { background: color-mix(in srgb, var(--brass-fill) 32%, transparent); }
@@ -367,6 +367,55 @@ html[data-light='dusk'] .light--dusk { z-index: 1; opacity: 1; transition: opaci
   .has-scene .stage { --horizon: 46.56%; --horizon-y: 0.4656; }
 }
 /* poster:end */
+
+/* ---------- the story gate (the user's request of 2026-11-17) ----------
+   A visitor who scrolls before the car is live waits at the top: the page stops scrolling, the
+   hero's cue fades, and the boot's progress shows at the foot of the screen, on the empty road and
+   in line with the copy, with a way out to the page without 3D. Never shown without the scene, nor
+   to a visitor who has not tried to scroll (Lighthouse never does). Its gutter kept, the page does not
+   shift sideways when its scrollbar goes. */
+.gate { display: none; }
+.has-scene .gate {
+  display: grid; gap: 0.55rem; position: fixed; z-index: 35;
+  left: var(--copy-x); bottom: calc(clamp(1.25rem, 5svh, 2.5rem) + env(safe-area-inset-bottom));
+  width: min(19rem, 100% - 2 * var(--copy-x));
+  visibility: hidden; opacity: 0; translate: 0 0.35rem;
+  transition: opacity 0.45s ease, translate 0.45s ease, visibility 0s linear 0.45s;
+}
+.has-scene.story-held .gate {
+  visibility: visible; opacity: 1; translate: 0 0;
+  transition: opacity 0.3s ease, translate 0.3s ease, visibility 0s;
+}
+html.has-scene { scrollbar-gutter: stable; }
+html.story-held { overflow: hidden; }
+.cue { transition: opacity 0.3s ease; }
+.story-held .cue { opacity: 0; }
+.gate-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: 0; color: var(--ink); }
+.gate-percent { color: var(--brass); font-variant-numeric: tabular-nums; }
+.gate-track { height: 2px; border-radius: 1px; background: var(--line); overflow: hidden; }
+.gate-line {
+  display: block; height: 100%; background: var(--brass);
+  transform-origin: 0 50%; transform: scaleX(var(--boot, 0)); transition: transform 0.35s ease-out;
+}
+.gate-skip {
+  justify-self: start; min-height: 2.75rem; margin: -0.35rem 0 -0.75rem; padding: 0;
+  border: 0; background: none; color: var(--ink-2); font: inherit; font-size: 0.9rem;
+  text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 0.25em;
+}
+.gate-skip:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+@media (hover: hover) {
+  .gate-skip:hover { color: var(--ink); text-decoration-color: currentColor; }
+}
+/* a very short screen (a laptop at 400 % zoom, 320 x 256): the gate takes the lede's place while it
+   shows, as it takes the cue's; both come back when the page lets go */
+@media (height < 22rem) {
+  .has-scene .copy--road .lede { transition: opacity 0.3s ease; }
+  .story-held .copy--road .lede { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .has-scene .gate, .has-scene.story-held .gate { translate: none; }
+  .gate-line { transition: none; }
+}
 .has-scene .turntable {
   display: block; position: absolute; z-index: 25;
   inset: 52% 4% 8% 4%;
