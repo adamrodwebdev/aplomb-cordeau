@@ -21,11 +21,52 @@ import { FILES, pickTier } from './sceneFiles.js';
 const { cabin: CABIN, wheels: WHEELS, engine: ENGINE, shadow: SHADOW, environments: ENVIRONMENT_FILES } = FILES;
 const MAX_MODEL_BYTES = 4 * 1024 * 1024; // each file is read at the door: size first, then the GLB magic
 
-async function loadModel(url) {
+/**
+ * The declared length of a body read as it comes: a plain count of bytes, within the limit; null when
+ * it is missing, not digits only, or compressed (the count would be the compressed one)
+ */
+function declaredLength(response) {
+  if (response.headers.get('content-encoding')) return null;
+  const text = response.headers.get('content-length');
+  if (text === null || !/^\d{1,10}$/.test(text)) return null;
+  const length = Number(text); // digits only, checked above: a whole, strict count
+  return Number.isSafeInteger(length) && length > 0 ? length : null;
+}
+
+/**
+ * The body, at most MAX_MODEL_BYTES, its bytes told to `onBytes(received, total)` as they come (the
+ * story gate's bar). Without a declared length it is read whole, then measured.
+ */
+async function readBody(response, onBytes) {
+  const total = declaredLength(response);
+  if (total !== null && total > MAX_MODEL_BYTES) throw new Error('model: too large');
+  if (total === null || !response.body || !onBytes) {
+    const buffer = await response.arrayBuffer();
+    if (buffer.byteLength > MAX_MODEL_BYTES) throw new Error('model: too large');
+    return buffer;
+  }
+  const body = new Uint8Array(total);
+  const reader = response.body.getReader();
+  let received = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (received + value.byteLength > total) {
+      await reader.cancel();
+      throw new Error('model: longer than declared');
+    }
+    body.set(value, received);
+    received += value.byteLength;
+    onBytes(received, total);
+  }
+  if (received !== total) throw new Error('model: shorter than declared');
+  return body.buffer;
+}
+
+async function loadModel(url, onBytes = null) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`model: HTTP ${response.status}`);
-  const buffer = await response.arrayBuffer();
-  if (buffer.byteLength > MAX_MODEL_BYTES) throw new Error('model: too large');
+  const buffer = await readBody(response, onBytes);
   const head = new DataView(buffer, 0, Math.min(12, buffer.byteLength));
   if (buffer.byteLength < 12 || head.getUint32(0, true) !== 0x46546c67 || head.getUint32(4, true) !== 2) throw new Error('model: not a glTF 2 binary');
   // meshopt-compressed (2.9 MB instead of 9.4 for the exterior): its decoder is WebAssembly, which a
@@ -36,7 +77,12 @@ async function loadModel(url) {
   return new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(buffer, '');
 }
 
-export async function startScene({ canvas, page, landing, plumbElement, captionElement, journeyElement, notesElement, soundButton, configuration, turntable, turnButtons, debugElement, flags, stopped }) {
+/**
+ * `bootProgress` (BootProgress) hears each step of the boot and the body's bytes: the story gate draws
+ * them for a visitor who tries to scroll before the car is live
+ */
+export async function startScene({ canvas, page, landing, plumbElement, captionElement, journeyElement, notesElement, soundButton, configuration, turntable, turnButtons, debugElement, flags, stopped, bootProgress }) {
+  bootProgress.reach('code');
   const settings = pickTier(flags);
   // the modules' evaluation and the WebGL context's opening, each in its own task (one of 78 ms)
   await nextTask();
@@ -49,15 +95,17 @@ export async function startScene({ canvas, page, landing, plumbElement, captionE
   // environments come from files: drawn here, PMREM held the main thread 0.5 s (2 s on Lighthouse's phone)
   const [environments, gltf, shadowPlate] = await Promise.all([
     Environments.load(stage.renderer, ENVIRONMENT_FILES),
-    loadModel(settings.exterior),
+    loadModel(settings.exterior, (received, total) => bootProgress.bytes(received, total)),
     new TextureLoader().loadAsync(SHADOW),
     document.fonts.load('64px "Aplomb Estoc Fierce"').catch(() => []),
   ]);
+  bootProgress.reach('files');
   await nextTask();
   const rig = await CarRig.build(gltf.scene, { cgHeight: CAR.cgHeight, moving: CAR.hinges });
   // the car wears the visitor's configuration from the start, then follows each choice
   const look = new CarLook(rig.object);
   look.dress(configuration.options, true);
+  bootProgress.reach('rig');
   rig.useWheels(configuration.options.wheel.id);
   rig.usePowertrain(configuration.options);
   const screens = new CabinScreens();
@@ -101,6 +149,7 @@ export async function startScene({ canvas, page, landing, plumbElement, captionE
   await nextTask();
   await director.warm();
   if (stopped()) return;
+  bootProgress.reach('warm');
   // the visitor's sound, off until they ask: the engine they configured, as the car leaves
   if (soundButton) new SoundToggle(soundButton, director);
 
@@ -118,7 +167,10 @@ export async function startScene({ canvas, page, landing, plumbElement, captionE
     // the scene's own first frame is on screen at the next one: the poster, the same frame, gives way
     if (!live) {
       live = true;
-      requestAnimationFrame(() => document.documentElement.classList.add('scene-live'));
+      requestAnimationFrame(() => {
+        document.documentElement.classList.add('scene-live');
+        bootProgress.reach('live'); // the story gate lets the page go
+      });
       // the tonal arc's other lights (1 MB), read once the scene is up: the white studio, the
       // workshop, the night and dusk; the night studio stands in until they are there
       window.setTimeout(() => environments.more().then(schedule), 1200);
