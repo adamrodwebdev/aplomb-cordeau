@@ -4,14 +4,24 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.4] - 2026-11-18
+
+### Fixed
+
+- The rear quarter panels no longer show crumpled shading between the rear doors and the wheel
+  arches. The simplification that lightens the car for the web had left each of them too few points
+  to carry the soft shadow of the rear wheel; they are now kept whole on large screens (2 % more
+  triangles in the car's body), and phones keep three times more of them than before.
+
 ## [1.3.3] - 2026-11-18
 
 ### Fixed
 
 - The thin black line behind the rear tyres is gone. The modifier that gives each body panel its
   thickness threw a few points off the rear bumper and the rear quarter panels, where their edges fold
-  under (one of them 12 cm off the bumper, read edge-on as a line beside the tyre); the export now
-  puts them back onto their panel.
+  under (one of them 12 cm off the bumper), and the simplification that lightens the car for the web
+  stretched them into a sliver 20 cm long, read edge-on as a line beside the tyre. The export now puts
+  those points back onto their panel, so the simplification has nothing to stretch.
 - The windows no longer look crumpled. The glass, the gloss black trims, the chrome and the lamp
   lenses showed the facets of their web simplification in their reflections; they now keep their
   original smooth shading, at the same triangle count. The cabin and the engine are unchanged.
