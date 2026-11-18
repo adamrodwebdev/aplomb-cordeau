@@ -35,8 +35,8 @@ export const FILES = Object.freeze({
  * tools/build-site.mjs refuses to build when a size no longer matches its file.
  */
 export const TIERS = Object.freeze({
-  high: { name: 'high', dpr: 1.5, spray: 4000, screenScale: 0.5, reflect: 0.5, skidPixels: [2048, 1024], exterior: MODEL, exteriorBytes: 3132356 },
-  low: { name: 'low', dpr: 1.25, spray: 1600, screenScale: 0.4, reflect: 0, skidPixels: [1024, 512], exterior: MODEL_PHONE, exteriorBytes: 1667320 },
+  high: { name: 'high', dpr: 1.5, spray: 4000, screenScale: 0.5, reflect: 0.5, skidPixels: [2048, 1024], exterior: MODEL, exteriorBytes: 3182172 },
+  low: { name: 'low', dpr: 1.25, spray: 1600, screenScale: 0.4, reflect: 0, skidPixels: [1024, 512], exterior: MODEL_PHONE, exteriorBytes: 1687336 },
 });
 
 /** The tier: the address's switch (flags.tier, read at the door), else phones and small memories get the low one */
