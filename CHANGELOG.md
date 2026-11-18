@@ -4,6 +4,16 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.2] - 2026-11-18
+
+### Fixed
+
+- The car is rebuilt from the latest generators. Every part's doubled vertices are merged, so the
+  honeycomb grilles' cells close and the gear selector's base ring loses its dark smears; the lettering
+  on the plates, the doors' scripts and the tyres is welded; the engine bay's aprons now face the bay,
+  so the light falls on them the right way. The car's shape and materials do not change. The exterior
+  is 43 KB lighter, the phone's exterior 39 KB heavier and the wheels 38 KB heavier.
+
 ## [1.3.1] - 2026-11-17
 
 ### Fixed
