@@ -169,6 +169,25 @@ const PEBBLE = /* glsl */ `
   }
 `;
 
+/* Cut-pile carpet on the floor and the mats (the user, 2026-11-18: the car had carpets but no real
+   flooring): tufts about 2 mm apart standing 0.4 mm proud, a fleck of lighter and darker fibres, and
+   clumps of pile about 7 mm across that still read at a grazing view (the door shot looks along the
+   floor, where the tufts alone faded out), and a slow drift in tone where the pile lies differently;
+   each fades to its mean below about a pixel. The material's sheen stays the pile's glow. */
+const CARPET = /* glsl */ `
+  {
+    vec2 q = aplombPlane(vMetric, vLocalNormal);
+    float tuft = aplombNoise(vec3(q * 520.0, 5.0)) * 0.65 + aplombNoise(vec3(q * 1400.0, 11.0)) * 0.35;
+    float seen = 1.0 - smoothstep(0.35, 0.8, length(fwidth(q * 520.0)));
+    float clump = aplombNoise(vec3(q * 140.0, 23.0));
+    float clumpSeen = 1.0 - smoothstep(0.4, 0.9, length(fwidth(q * 140.0)));
+    normal = aplombBump(normal, tuft * 0.0004 * seen + clump * 0.0006 * clumpSeen);
+    float fleck = aplombNoise(vec3(q * 900.0, 17.0));
+    float drift = aplombNoise(vMetric * 9.0);
+    diffuseColor.rgb *= (0.93 + 0.14 * drift) * mix(1.0, 0.8 + 0.4 * fleck, seen) * mix(1.0, 0.86 + 0.28 * clump, clumpSeen);
+  }
+`;
+
 /* The hidden vent's micro-louvres: fins across the slot every 2.4 mm, a dark gap between */
 const LOUVRE = /* glsl */ `
   {
@@ -265,16 +284,18 @@ const occlusion = (lift) => /* glsl */ `
  * `lift` a uniform (0 to 1) that fades the baked occlusion, shared by the parts that come apart.
  * The cabin's (the brief of 2026-11-15): `upholstery` perforated Nappa and `crease` the bolsters'
  * folds (both under `leather`, which CarLook eases), `pebble` the vinyl's grain, `louvre` the
- * hidden vent, `perforation` the grilles; the wood's `figure` (CarLook) turns ash into walnut.
+ * hidden vent, `perforation` the grilles, `carpet` the floor's and the mats' pile; the wood's
+ * `figure` (CarLook) turns ash into walnut.
  */
 export function dress(material, {
   paint = false, tread = false, disc = false, wood = '', screen = null, frit = null, weave = false, lift = null,
-  upholstery = false, crease = false, pebble = false, louvre = false, perforation = false, heat = null, ao = true,
+  upholstery = false, crease = false, pebble = false, louvre = false, perforation = false, carpet = false, heat = null,
+  ao = true,
 }) {
-  const flags = { paint, tread, disc, wood: Boolean(wood), screen: Boolean(screen), frit: Boolean(frit), weave, lift: Boolean(lift), upholstery, crease, pebble, louvre, perforation, heat: Boolean(heat), ao };
+  const flags = { paint, tread, disc, wood: Boolean(wood), screen: Boolean(screen), frit: Boolean(frit), weave, lift: Boolean(lift), upholstery, crease, pebble, louvre, perforation, carpet, heat: Boolean(heat), ao };
   const key = `aplomb7-${Object.entries(flags).filter(([, on]) => on).map(([name]) => name).join('-')}`;
   const leather = upholstery || crease;
-  const surface = leather || pebble || perforation || weave; // the twill lies on the surface's plane too
+  const surface = leather || pebble || perforation || weave || carpet; // the twill lies on the surface's plane too
   if (leather) material.userData.leather = { value: 0 };
   if (weave) material.userData.weave = { value: 0 };
   if (paint) material.userData.flake = { value: 1 };
@@ -299,7 +320,7 @@ export function dress(material, {
     if (weave) fragment = fragment.replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>\n${WEAVE}`);
     if (louvre) fragment = fragment.replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>\n${LOUVRE}`);
     if (perforation) fragment = fragment.replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>\n${HEXPERF}`);
-    const bumps = `${upholstery ? UPHOLSTERY : ''}${crease ? CREASE : ''}${pebble ? PEBBLE : ''}`;
+    const bumps = `${upholstery ? UPHOLSTERY : ''}${crease ? CREASE : ''}${pebble ? PEBBLE : ''}${carpet ? CARPET : ''}`;
     if (bumps) fragment = fragment.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>\n${bumps}`);
     if (screen) fragment = fragment.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>\n${SCREEN}`);
     if (heat) fragment = fragment.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>\n${HEAT}`);
@@ -432,8 +453,8 @@ export const LOOKS = Object.freeze({
   'microfibre-perf': { set: { color: 0x423e3a, roughness: 0.94, sheen: 0.4, sheenColor: 0x8d877f, ...SUEDE } },
   'trim-pearl': { set: { color: 0xb7b0a4, roughness: 0.6, metalness: 0 } },
   'trim-dark': { set: { color: 0x2c2a28, roughness: 0.62, metalness: 0 } },
-  carpet: { set: { color: 0x3b3835, roughness: 1, sheen: 0.5, sheenRoughness: 0.5, sheenColor: 0x6b6660 } },
-  'carpet-mat': { set: { color: 0x4c4844, roughness: 1, sheen: 0.5, sheenRoughness: 0.5, sheenColor: 0x7a756e } },
+  carpet: { set: { color: 0x3b3835, roughness: 1, sheen: 0.5, sheenRoughness: 0.5, sheenColor: 0x6b6660 }, carpet: true },
+  'carpet-mat': { set: { color: 0x4c4844, roughness: 1, sheen: 0.5, sheenRoughness: 0.5, sheenColor: 0x7a756e }, carpet: true },
   'ash-dash': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'y', weave: true },
   'ash-bridge': { set: { color: 0xcbb696, roughness: 0.46, metalness: 0 }, wood: 'x', weave: true },
   'alu-brushed': { set: { color: 0xd3d6d8, roughness: 0.3, metalness: 1 } },

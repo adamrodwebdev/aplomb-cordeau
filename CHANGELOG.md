@@ -4,6 +4,30 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.5] - 2026-11-20
+
+### Fixed
+
+- The windscreen's black edge band no longer shows jagged pale patches: each pane keeps the detail of
+  its band, and its distance to the edge is read again after the simplification for the web.
+- The glass's black edges no longer look beaded, like a zipper, by the door mirrors, along the door
+  windows' tops and beside the windscreen's pillars. Some points along a pane's edge took the light of
+  the pane's other side, so the shading flipped within each small triangle; every point now takes the
+  light of its own side.
+- The cabin floor is a moulded carpet under the mats, with a visible pile, instead of a flat sheet.
+- The rear seat belts lie over the seats' shoulders down to their anchors instead of hanging in the
+  air, and the rear seats' channels are as even as the front's.
+- The bonnet opens before the camera turns to the engine bay, so it no longer hides the engine.
+- The rear seats are shaped round the rear wheel arches, as real ones are, instead of passing through
+  the arches' linings, and their belts follow them.
+- The engine's moving parts clear each other: the pistons no longer reach the crankshaft's
+  counterweights or a solid block at the top of their bores, the jets that cool them stand outside
+  their stroke, and the rear turbo's inlet elbow joins its housing in one piece.
+- The defroster panel on the dash has an even rounded edge. Its ends were pinched in by 25 mm.
+- Thin folds no longer catch the light of their other side, which showed as dark or pale flecks on the
+  door pockets, the seals, the arch linings and the engine's head. The cabin's file is about 375 KB
+  heavier for it; the body's is 19 KB lighter.
+
 ## [1.3.4] - 2026-11-18
 
 ### Fixed

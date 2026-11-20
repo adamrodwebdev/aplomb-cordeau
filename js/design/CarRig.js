@@ -567,6 +567,7 @@ export class CarRig {
         pebble: Boolean(look?.pebble),
         louvre: Boolean(look?.louvre),
         perforation: Boolean(look?.perforation),
+        carpet: Boolean(look?.carpet),
         ao: look?.ao !== false,
       });
     }
