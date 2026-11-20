@@ -199,11 +199,13 @@ export const JOURNEY = Object.freeze({
   bonnet: Object.freeze({
     hinge: 'CTL_bonnet',
     open: 56, // degrees: positive lifts the front edge
-    keys: Object.freeze([[4.5, 0], [4.82, 1], [5.5, 1], [5.72, 0]].map((key) => Object.freeze(key))),
+    // open before the camera turns to the bay (the study session's measure, 2026-11-18: opening from 4.5
+    // to 4.82, the half-open bonnet hid up to 94 % of the engine at 4.60; from 4.42 to 4.62, 0.3 % at most)
+    keys: Object.freeze([[4.42, 0], [4.62, 1], [5.5, 1], [5.72, 0]].map((key) => Object.freeze(key))),
   }),
   explode: Object.freeze([[4.9, 0], [5.14, 1], [5.34, 1], [5.5, 0]].map((key) => Object.freeze(key))),
   notesFrom: 0.7, // the engine's notes show once the parts are this far apart
-  engineLight: [4.55, 4.85, 5.5, 5.72], // a cool lamp over the open bay while the camera looks in
+  engineLight: [4.45, 4.7, 5.5, 5.72], // a cool lamp over the open bay while the camera looks in (follows the bonnet)
   engineLux: 2.2, // its intensity, candela
   engineFrom: 2.0, // the engine set (1.5 MB since its parts are baked) is fetched from the exterior chapter on
   // the cabin's model (1.9 MB) is fetched once the visitor scrolls into the water transition, which

@@ -29,14 +29,14 @@ export const FILES = Object.freeze({
  * `spray`: particles thrown by the tyres; `screenScale`: the water screen's resolution against the
  * canvas; `reflect`: the wet road's mirror pass (0 on phones: the car drawn twice is too much
  * there, the water keeps its sheen and the sky); `skidPixels`: the traces' mask; `exterior`: the
- * body's file (3.0 MB, or 1.5 MB with 155,000 triangles instead of 369,000 on phones);
+ * body's file (3.8 MB, or 2.0 MB with 157,000 triangles instead of 396,000 on phones);
  * `exteriorBytes`: that file's exact size, which the story gate's bar counts against when the host
  * compresses it (GitHub Pages gzips GLB, so its declared length is the compressed one, 2026-11-17).
  * tools/build-site.mjs refuses to build when a size no longer matches its file.
  */
 export const TIERS = Object.freeze({
-  high: { name: 'high', dpr: 1.5, spray: 4000, screenScale: 0.5, reflect: 0.5, skidPixels: [2048, 1024], exterior: MODEL, exteriorBytes: 3182172 },
-  low: { name: 'low', dpr: 1.25, spray: 1600, screenScale: 0.4, reflect: 0, skidPixels: [1024, 512], exterior: MODEL_PHONE, exteriorBytes: 1687336 },
+  high: { name: 'high', dpr: 1.5, spray: 4000, screenScale: 0.5, reflect: 0.5, skidPixels: [2048, 1024], exterior: MODEL, exteriorBytes: 3765968 },
+  low: { name: 'low', dpr: 1.25, spray: 1600, screenScale: 0.4, reflect: 0, skidPixels: [1024, 512], exterior: MODEL_PHONE, exteriorBytes: 1976580 },
 });
 
 /** The tier: the address's switch (flags.tier, read at the door), else phones and small memories get the low one */
