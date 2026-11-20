@@ -4,6 +4,16 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.6] - 2026-11-20
+
+### Fixed
+
+- The glass no longer reflects in hard-edged triangles. Since 1.3.5 the roof glass, the windscreen and
+  the door windows showed sharp wedges and streaks in their reflections: the correction that cleaned
+  up the glass's black edge band also flattened the shading of the clear glass around it, which is
+  drawn with much larger triangles. It now applies to the band's small triangles alone, and the clear
+  glass reflects in one smooth curve again.
+
 ## [1.3.5] - 2026-11-20
 
 ### Fixed
