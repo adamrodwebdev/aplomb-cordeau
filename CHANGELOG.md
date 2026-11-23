@@ -4,6 +4,21 @@ All notable changes to this site are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the versions
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.7] - 2026-11-23
+
+### Fixed
+
+- The engine block's deck has no holes. In the exploded view, seven black triangles showed along each
+  side of the block, where the deck stopped short of each cylinder's corners.
+- The engine block's ribs are whole. The ends of each rib crossed over themselves, which left a
+  triangle folded back over the rib.
+- The cylinder head's valve-train bay has its walls. Its ends lay in the same plane as the head's end
+  faces, which can flicker, and its sides ended in knife edges.
+- The door sills' scuff plates are closed by a thin sheet underneath, instead of a face that crossed
+  their own lip.
+- The rubber seals in the door shuts, the jamb strikers and the stitching follow their path without
+  twisting, and the window seals' inner faces no longer fold over themselves.
+
 ## [1.3.6] - 2026-11-20
 
 ### Fixed
