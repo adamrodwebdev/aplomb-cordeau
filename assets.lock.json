@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "repository": "adamrodwebdev/private-assets",
+  "commit": "c03eb1f47e138983ea101b3d62f2cc27d188a6e0",
+  "folder": "aplomb-cordeau",
+  "files": [
+    {
+      "path": "fonts/AplombEstoc-VF.woff2",
+      "source": "fonts/AplombEstoc-VF.woff2",
+      "size": 6180,
+      "sha256": "dc02d839bde8f9e66ca7f1ce4954777d5407dab97479a0da2d937d779ad7c6cc"
+    },
+    {
+      "path": "fonts/AplombEstoc-Fierce.woff2",
+      "source": "fonts/AplombEstoc-Fierce.woff2",
+      "size": 4272,
+      "sha256": "85553fd71fc4f12b55015ac9cd76be6c8ba3e1dac48ae421f27cebebf966c240"
+    },
+    {
+      "path": "cordeau7-exterior.glb",
+      "source": "models/cordeau7-exterior.glb",
+      "size": 3727256,
+      "sha256": "b2cfe19dac79f86b5d515d53ae8ecff04156e2570167639eff04afd6c0bb9005"
+    },
+    {
+      "path": "cordeau7-exterior-phone.glb",
+      "source": "models/cordeau7-exterior-phone.glb",
+      "size": 1963716,
+      "sha256": "944cb46f040c796aafb12f858595a1528af224ff084e774eb090f8c05ca827e5"
+    },
+    {
+      "path": "cordeau7-cabin.glb",
+      "source": "models/cordeau7-cabin.glb",
+      "size": 3031164,
+      "sha256": "8ceadd963710cb05e9ea4eec98e6cc931f83e64a132ec01fd05449bc78e9e74c"
+    },
+    {
+      "path": "cordeau7-wheels.glb",
+      "source": "models/cordeau7-wheels.glb",
+      "size": 670304,
+      "sha256": "511b01e322733f67152717db8aa94c784e39343bcb12e32d9af5f78dc74b4849"
+    },
+    {
+      "path": "cordeau7-engine.glb",
+      "source": "models/cordeau7-engine.glb",
+      "size": 2821484,
+      "sha256": "446a010aa73159c890baa2b8fccd1a5685a4735197510acb56d2e579cc29cf96"
+    }
+  ]
+}

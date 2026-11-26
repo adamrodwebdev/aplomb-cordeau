@@ -5,6 +5,10 @@ images, sounds and the Aplomb Estoc typeface may be viewed here and on the site,
 modified, distributed or used in other works without written permission
 (contact@adamrodwebdev.com).
 
+The Aplomb Estoc typeface and the 3D models are not in this repository: the site's deploy copies
+them in from a private source. Aplomb Estoc is a typeface by Ressac, licensed to this site only and
+covered by no licence of this repository; see fonts/AplombEstoc-LICENSE.md.
+
 Third-party components keep their own licences:
 - three.js, in vendor/three: MIT licence, see vendor/three/LICENSE.
 - Archivo, in fonts/archivo, and Geist Mono, in fonts/geist-mono: SIL Open Font License 1.1, see
