@@ -1,0 +1,6 @@
+# Our own components: copied in from the private repo adamrodwebdev/private-assets by
+# tools/fetch-assets.mjs, at the commit pinned in assets.lock.json. Never committed here.
+/fonts/AplombEstoc-*.woff2
+/cordeau7-*.glb
+# A download the fetch did not finish
+*.part
