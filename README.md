@@ -36,7 +36,8 @@ nothing is for sale, no form sends anything, and the prices and figures are illu
   without 3D.
 - Everything is served from this site: no cookies, no trackers, no request to another site. Each page
   carries a Content-Security-Policy with the hashes of its inline scripts.
-- Fonts: Aplomb Estoc (our own), Archivo and Geist Mono (SIL Open Font License 1.1).
+- Fonts: Aplomb Estoc, by Ressac and licensed to this site only (see its
+  [notice](fonts/AplombEstoc-LICENSE.md)), Archivo and Geist Mono (SIL Open Font License 1.1).
 
 ## Code map
 
@@ -46,11 +47,41 @@ nothing is for sale, no form sends anything, and the prices and figures are illu
 | `js/rules/` | the choreography, the catalogue and its prices: data and pure functions |
 | `js/logic/` | the visitor's configuration and the scroll's state |
 | `js/design/` | the scene, the configurator's panels, the docks, the index, the notices |
-| `*.glb`, `environment-*.png`, `poster-*` | the models, the lights and the first frame |
+| `environment-*.png`, `poster-*` | the lights and the first frame |
+| `assets.lock.json`, `tools/fetch-assets.mjs` | the private files this site copies in, and the script that copies them |
+| `.github/workflows/pages.yml` | the deploy to GitHub Pages |
 | `legal.html`, `404.html` | the legal notice and privacy page, the missing page |
 
 The site is built from the project's working repository; this repository holds what is published.
-GitHub Pages serves the `main` branch.
+
+## Private files and deployment
+
+**The Aplomb Estoc typeface and the car's five models are not part of this repository.** They are
+our own components, kept in a private repository and git-ignored here:
+`fonts/AplombEstoc-VF.woff2`, `fonts/AplombEstoc-Fierce.woff2` and `cordeau7-exterior.glb`,
+`cordeau7-exterior-phone.glb`, `cordeau7-cabin.glb`, `cordeau7-wheels.glb`,
+`cordeau7-engine.glb`. No licence of this repository covers them.
+
+`assets.lock.json` pins the private commit to read and each file's size and SHA-256.
+`tools/fetch-assets.mjs` (Node 20 or later, no dependencies) copies the files in, checks each one's
+size, SHA-256 and signature (`wOF2` for a font, `glTF` 2 for a model), and stops with the list of
+problems when anything is missing or different.
+
+```sh
+node tools/fetch-assets.mjs --local     # from a clone of the private repo at ../private-assets
+node tools/fetch-assets.mjs --check     # checks the files already in place
+```
+
+To change a file: commit it to the private repo and push, then run
+`node tools/fetch-assets.mjs --local --relock` in this repository and commit the new
+`assets.lock.json`.
+
+**Deployment.** GitHub Actions publishes the site (`.github/workflows/pages.yml`) on every push to
+`main`, or by hand from the Actions tab. It checks out the code, copies the private files in with
+the read-only secret `PRIVATE_ASSETS_TOKEN` (given to that one step, sent in a header, never
+printed), checks them again, then uploads and deploys the site. A missing secret or a file that does
+not match the lock stops the deploy, and the site stays as it was. Work goes on `dev`; `main`
+only receives a release.
 
 ## Credits
 
